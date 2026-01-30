@@ -21,6 +21,11 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
 
     public boolean addToCart(String userId, CartItemRequest request) {
+        // Basic validation
+        if (request.getQuantity() == null || request.getQuantity() <= 0) {
+            return false;
+        }
+
         // Look for product
 //        Optional<Product> productOpt = productRepository.findById(request.getProductId());
 //        if (productOpt.isEmpty())
@@ -40,15 +45,22 @@ public class CartService {
         if (existingCartItem != null) {
             // Update the quantity
             existingCartItem.setQuantity(existingCartItem.getQuantity() + request.getQuantity());
-            existingCartItem.setPrice(BigDecimal.valueOf(300));
+            // Update price if provided
+            if (request.getPrice() != null) {
+                existingCartItem.setPrice(request.getPrice());
+            }
             cartItemRepository.save(existingCartItem);
         } else {
+            // Price is required for new items
+            if (request.getPrice() == null) {
+                return false;
+            }
             // Create new cart item
             CartItem cartItem = new CartItem();
             cartItem.setUserId(userId);
-            cartItem.setProductId(cartItem.getProductId());
+            cartItem.setProductId(request.getProductId());
             cartItem.setQuantity(request.getQuantity());
-            cartItem.setPrice(BigDecimal.valueOf(300));
+            cartItem.setPrice(request.getPrice());
             cartItemRepository.save(cartItem);
         }
         return true;
