@@ -3,7 +3,11 @@ package com.ecommerce.order.service;
 
 
 import com.ecommerce.order.Repository.CartItemRepository;
+import com.ecommerce.order.clients.ProductServiceClient;
+import com.ecommerce.order.clients.UserServiceClient;
 import com.ecommerce.order.dto.CartItemRequest;
+import com.ecommerce.order.dto.ProductResponse;
+import com.ecommerce.order.dto.UserResponse;
 import com.ecommerce.order.model.CartItem;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,21 +24,25 @@ public class CartService {
 
     private final CartItemRepository cartItemRepository;
 
+    private final ProductServiceClient productServiceClient;
+
+    private final UserServiceClient userServiceClient;
+
     public boolean addToCart(String userId, CartItemRequest request) {
         // Basic validation
-        if (request.getQuantity() == null || request.getQuantity() <= 0) {
-            return false;
-        }
 
-        // Look for product
-//        Optional<Product> productOpt = productRepository.findById(request.getProductId());
-//        if (productOpt.isEmpty())
-//            return false;
-//
-//        Product product = productOpt.get();
-//        if (product.getStockQuantity() < request.getQuantity())
-//            return false;
-//
+
+      //   Look for product
+        ProductResponse product = productServiceClient.getProductById(request.getProductId());
+
+        if (product == null || product.getStockQuantity() < request.getQuantity())
+             return false;
+
+        UserResponse user = userServiceClient.getUserById(userId);
+        if (user == null)
+            return false;
+
+
 //        Optional<User> userOpt = userRepository.findById(Long.valueOf(userId));
 //        if (userOpt.isEmpty())
 //            return false;
