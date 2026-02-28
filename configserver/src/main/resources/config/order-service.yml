@@ -21,6 +21,14 @@ spring:
 server:
   port: 8083
 
+rabbitmq:
+  exchange:
+    name: order.exchange
+  queue:
+    name: orner.queue
+  routing:
+    name: order.tracking
+
 management:
   endpoints:
     web:
